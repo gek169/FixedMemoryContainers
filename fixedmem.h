@@ -170,7 +170,7 @@ HAS_ITEM(type, used, char, fixedmem_hashmap_type_has_id_property_test)		\
 static const size_t name##_size = ((size_t)1)<<pow2size;					\
 static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
 extern type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
-extern size_t name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	\
+extern size_t name ## _head; /*The head of the linked list. 0 means its empty.*/	\
 static inline size_t name##_getfree(){/*Find a free spot*/					\
 	for(size_t i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
 		if(name##_mem[i].used == 0) return i+1; /*Lua indexing*/			\

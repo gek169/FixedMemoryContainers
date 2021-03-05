@@ -26,7 +26,7 @@ static inline C* buildt_##A##B##D(){ 	\
 
 
 //The basic fixed memory block!
-
+//Or "vector" if you want to get all computer-sciencey
 
 #define FIXEDMEM_BLOCK(name, pow2)\
 uint8_t name ## _mem [((size_t)1)<<pow2];\
@@ -45,7 +45,7 @@ static inline void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 
 //Zero is an invalid hash value.
 #define FIXEDMEM_HASHMAP(type, name, pow2width, depth)							\
-HAS_ITEM(type, id, size_t, fixedmem_hashmap_type_has_id_property_test)	\
+HAS_ITEM(type, id, size_t, _has_id_property_test)	\
 static const size_t name ##_width = (((size_t)1)<<pow2width);		\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
 type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
@@ -72,7 +72,6 @@ static inline type* name##_getfree(size_t id){	\
 
 
 #define FIXEDMEM_HASHMAP_EXTERN(type, name, pow2width, depth)							\
-HAS_ITEM(type, id, size_t, fixedmem_hashmap_type_has_id_property_test)	\
 static const size_t name ##_width = (((size_t)1)<<pow2width);		\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
 extern type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
@@ -105,8 +104,8 @@ static inline type* name##_getfree(size_t id){			\
 //Indices are Lua-style, 0 is the invalid index, internally.
 //Externally, the user should experience the library as if 0-based indices are used.
 #define FIXEDMEM_LL(type, name, pow2size)									\
-HAS_ITEM(type, next, size_t, fixedmem_hashmap_type_has_id_property_test)	\
-HAS_ITEM(type, used, char, fixedmem_hashmap_type_has_id_property_test)		\
+HAS_ITEM(type, next, size_t, _has_next_property_test)						\
+HAS_ITEM(type, used, char, _has_used_property_test)							\
 static const size_t name##_size = ((size_t)1)<<pow2size;					\
 static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
 type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
@@ -165,8 +164,6 @@ static inline size_t name##_insert(size_t index, type me){					\
 
 //External declaration
 #define FIXEDMEM_LL_EXTERN(type, name, pow2size)									\
-HAS_ITEM(type, next, size_t, fixedmem_hashmap_type_has_id_property_test)	\
-HAS_ITEM(type, used, char, fixedmem_hashmap_type_has_id_property_test)		\
 static const size_t name##_size = ((size_t)1)<<pow2size;					\
 static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
 extern type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\

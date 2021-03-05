@@ -45,5 +45,5 @@ static void name##_cleanup(name* f){						\
 		c = f; cpr = NULL; cpi = 0;							\
 	}														\
 															\
-}															\
+}
 

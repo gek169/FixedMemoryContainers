@@ -16,7 +16,7 @@
 #define ASSERT_SAME_TYPE(a, b)  ((&(a) == &(b)))
 
 #define HAS_ITEM(A,B,C,D) 				\
-static inline C* buildt_##A##B##D(){ 	\
+static  C* buildt_##A##B##D(){ 	\
   A t; 									\
   C q;									\
   int f = ASSERT_SAME_TYPE(q, t.B);		\
@@ -31,14 +31,14 @@ static inline C* buildt_##A##B##D(){ 	\
 #define FIXEDMEM_BLOCK(name, pow2)\
 uint8_t name ## _mem [((size_t)1)<<pow2];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
-static inline void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
-static inline void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
+static  void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
+static  void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
 extern uint8_t name ## _mem [((size_t)1)<<pow2];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
-static inline void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
-static inline void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
+static  void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
+static  void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 
 
 //The hash map!
@@ -49,7 +49,7 @@ HAS_ITEM(type, id, size_t, _has_id_property_test)	\
 static const size_t name ##_width = (((size_t)1)<<pow2width);		\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
 type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
-static inline type* name##_get(size_t id){		\
+static  type* name##_get(size_t id){		\
 	type* retval = name##_mem + (id & ( name ##_mask ));\
 	size_t cdep = 0;									\
 	for(size_t i = 0; i < depth; i++){					\
@@ -59,7 +59,7 @@ static inline type* name##_get(size_t id){		\
 	}													\
 	return NULL;										\
 }														\
-static inline type* name##_getfree(size_t id){	\
+static  type* name##_getfree(size_t id){	\
 	type* retval = name##_mem + (id & ( name ##_mask ));\
 	size_t cdep = 0;									\
 	for(size_t i = 0; i < depth; i++){					\
@@ -75,7 +75,7 @@ static inline type* name##_getfree(size_t id){	\
 static const size_t name ##_width = (((size_t)1)<<pow2width);		\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
 extern type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
-static inline type* name##_get(size_t id){		\
+static  type* name##_get(size_t id){		\
 	type* retval = name##_mem + (id & ( name ##_mask ));\
 	size_t cdep = 0;									\
 	for(size_t i = 0; i < depth; i++){					\
@@ -85,7 +85,7 @@ static inline type* name##_get(size_t id){		\
 	}													\
 	return NULL;										\
 }														\
-static inline type* name##_getfree(size_t id){			\
+static  type* name##_getfree(size_t id){			\
 	type* retval = name##_mem + (id & ( name ##_mask ));\
 	size_t cdep = 0;									\
 	for(size_t i = 0; i < depth; i++){					\
@@ -110,12 +110,12 @@ static const size_t name##_size = ((size_t)1)<<pow2size;					\
 static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
 type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
 size_t name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	\
-static inline size_t name##_getfree(){/*Find a free spot*/					\
+static  size_t name##_getfree(){/*Find a free spot*/					\
 	for(size_t i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
 		if(name##_mem[i].used == 0) return i+1; /*Lua indexing*/			\
 	return name##_size+1;													\
 }																			\
-static inline type* name(size_t index){/*Traverse the linked list*/			\
+static  type* name(size_t index){/*Traverse the linked list*/			\
 	/*The user has entered a zero index.*/									\
 	size_t t = (name##_head-1);												\
 	for(size_t i = 0; i < index; i++) 										\
@@ -128,7 +128,7 @@ static inline type* name(size_t index){/*Traverse the linked list*/			\
 	if(name##_mem[t].used == 0) return NULL; /* Need an additional test*/	\
 	return name##_mem + t;													\
 }																			\
-static inline size_t name##_remove(size_t index){							\
+static  size_t name##_remove(size_t index){							\
 	type* atind = name(index);												\
 	if(!atind) return 0; /*Error- invalid index.*/							\
 	atind->used = 0; /* No longer being used.*/								\
@@ -142,7 +142,7 @@ static inline size_t name##_remove(size_t index){							\
 		atind->next = 0;return 1; /*Success!*/								\
 	}																		\
 }																			\
-static inline size_t name##_insert(size_t index, type me){					\
+static  size_t name##_insert(size_t index, type me){					\
 	size_t di = name##_getfree();/*Destination Index.*/						\
 	me.used = 1;/*The user will not have set it*/							\
 	if(di > name##_size) return 0;	/*Linked list is full!*/				\
@@ -168,12 +168,12 @@ static const size_t name##_size = ((size_t)1)<<pow2size;					\
 static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
 extern type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
 extern size_t name ## _head; /*The head of the linked list. 0 means its empty.*/	\
-static inline size_t name##_getfree(){/*Find a free spot*/					\
+static  size_t name##_getfree(){/*Find a free spot*/					\
 	for(size_t i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
 		if(name##_mem[i].used == 0) return i+1; /*Lua indexing*/			\
 	return name##_size+1;													\
 }																			\
-static inline type* name(size_t index){/*Traverse the linked list*/			\
+static  type* name(size_t index){/*Traverse the linked list*/			\
 	/*The user has entered a zero index.*/									\
 	size_t t = (name##_head-1);												\
 	for(size_t i = 0; i < index; i++) 										\
@@ -186,7 +186,7 @@ static inline type* name(size_t index){/*Traverse the linked list*/			\
 	if(name##_mem[t].used == 0) return NULL; /* Need an additional test*/	\
 	return name##_mem + t;													\
 }																			\
-static inline size_t name##_remove(size_t index){							\
+static  size_t name##_remove(size_t index){							\
 	type* atind = name(index);												\
 	if(!atind) return 0; /*Error- invalid index.*/							\
 	atind->used = 0; /* No longer being used.*/								\
@@ -200,7 +200,7 @@ static inline size_t name##_remove(size_t index){							\
 		atind->next = 0;return 1; /*Success!*/								\
 	}																		\
 }																			\
-static inline size_t name##_insert(size_t index, type me){					\
+static  size_t name##_insert(size_t index, type me){					\
 	size_t di = name##_getfree();/*Destination Index.*/						\
 	me.used = 1;/*The user will not have set it*/							\
 	if(di > name##_size) return 0;	/*Linked list is full!*/				\

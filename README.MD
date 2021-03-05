@@ -1,4 +1,4 @@
-# Simple Fixed Memory Containers for C, Public Domain
+# Simple Fixed Memory (Plus some others...) Containers for C, Public Domain
 
 No malloc, no free, just simple fixed memory containers.
 
@@ -20,6 +20,8 @@ Check the examples.
 * a way to declare blocks of contiguous memory.
 
 * A linked list
+
+* An n-tree implementation with an arbitrary number of children.
 
 ## Does the world need another container library for C?
 

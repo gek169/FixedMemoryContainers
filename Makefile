@@ -7,6 +7,7 @@ all:
 	$(CC) $(CFLAGS) fixedhash.c -o fixedhash.out
 	$(CC) $(CFLAGS) fixedmem.c -o fixedmem.out
 	$(CC) $(CFLAGS) fixedll.c -o fixedll.out
+	$(CC) $(CFLAGS) dyntree.c -o dyntree.out
 
 clean:
 	rm -f *.exe *.out *.o

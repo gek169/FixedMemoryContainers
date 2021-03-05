@@ -31,14 +31,12 @@ static inline C* buildt_##A##B##D(){ 	\
 #define FIXEDMEM_BLOCK(name, pow2)\
 uint8_t name ## _mem [((size_t)1)<<pow2];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
-static const size_t name ## _mask = ((size_t)1)<<pow2 -1;\
 static inline void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
 static inline void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
 extern uint8_t name ## _mem [((size_t)1)<<pow2];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
-static const size_t name ## _mask = ((size_t)1)<<pow2 -1;\
 static inline void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
 static inline void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 

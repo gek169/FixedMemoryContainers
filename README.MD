@@ -1,8 +1,11 @@
 # Simple Fixed Memory (Plus some others...) Containers for C, Public Domain
 
-No malloc, no free, just simple fixed memory containers.
+The fixed memory containers (in fixedmem.h) do not require any malloc or free calls, they perform
+their own memory management on fixed-size global arrays.
 
-You declare it global and you have access to it everywhere.
+Other containers in the repository exist purely as STL stand-ins.
+
+
 
 This project was originally started to see what would happen if you created an incredibly large
 global array. As it turns out, not only will it not actually get allocated into your program

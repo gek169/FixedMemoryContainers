@@ -40,11 +40,11 @@ static inline void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 
 //Zero is an invalid hash value.
 #define FIXEDMEM_HASHMAP(type, name, pow2width, depth)							\
-HAS_ITEM(type, id, unsigned int, fixedmem_hashmap_type_has_id_property_test)	\
+HAS_ITEM(type, id, size_t, fixedmem_hashmap_type_has_id_property_test)	\
 static const size_t name ##_width = (((size_t)1)<<pow2width);		\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
 type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
-static inline type* name##_get(unsigned int id){		\
+static inline type* name##_get(size_t id){		\
 	type* retval = name##_mem + (id & ( name ##_mask ));\
 	size_t cdep = 0;									\
 	for(size_t i = 0; i < depth; i++){					\
@@ -54,7 +54,7 @@ static inline type* name##_get(unsigned int id){		\
 	}													\
 	return NULL;										\
 }														\
-static inline type* name##_getfree(unsigned int id){	\
+static inline type* name##_getfree(size_t id){	\
 	type* retval = name##_mem + (id & ( name ##_mask ));\
 	size_t cdep = 0;									\
 	for(size_t i = 0; i < depth; i++){					\

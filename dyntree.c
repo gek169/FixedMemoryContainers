@@ -4,7 +4,7 @@
 
 #include "dynmemtree.h"
 
-DYNTREE(void*, mybin, 2);
+DYNTREE(void, mybin, 2);
 
 mybin b; //When declared global, it is already in its initialized state.
 

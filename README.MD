@@ -18,13 +18,17 @@ Check the examples.
 
 ## What do you have?
 
+Fixed memory containers:
+
 * A hashmap of restricted depth, 
 
 * a way to declare blocks of contiguous memory.
 
 * A linked list
 
-* An n-tree implementation with an arbitrary number of children.
+Dynamic memory containers:
+
+* An n-tree implementation with an arbitrary number of children designed to manage free() ing memory at the end of your program.
 
 ## Does the world need another container library for C?
 

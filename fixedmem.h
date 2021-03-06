@@ -29,13 +29,13 @@ static  C* buildt_##A##B##D(){ 	\
 //Or "vector" if you want to get all computer-sciencey
 
 #define FIXEDMEM_BLOCK(name, pow2)\
-uint8_t name ## _mem [((size_t)1)<<pow2];
+size_t name ## _mem [(((size_t)1)<<pow2)/sizeof(size_t)];
 
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
-extern uint8_t name ## _mem [((size_t)1)<<pow2];\
+extern size_t name ## _mem [(((size_t)1)<<pow2)/sizeof(size_t)];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
-static  void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
-static  void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
+static  void* name(void* p) {return (void*)((size_t)((uint8_t*) name ## _mem ) + (size_t)p); }\
+static  void* name##_st(size_t p) {return (void*)(((uint8_t*) name ## _mem ) + p); }
 
 
 //The hash map!

@@ -13,11 +13,12 @@ typedef struct {
 //Argument 4: the depth (not power of 2) of the hashmap
 //Argument 5: The number of "columns" of the hashmap to search. if it's equal to 1<<(argument 3) then it is most
 //memory efficient, but the worst case scenario is slowest.
+//ZERO id is an invalid hashmap entry
 FIXEDMEM_HASHMAP(hdata, myhmap, 8, 4, 2);
 FIXEDMEM_HASHMAP_EXTERN(hdata, myhmap, 8, 4, 2);
 
 int main(){
-	for(size_t i = 1; i < 9*256; i+= 256){
+	for(size_t i = 1; i < 4*256 + 2; i+= 1){
 		hdata mine;
 		mine.id = i;
 		mine.data = rand();
@@ -29,7 +30,7 @@ int main(){
 			printf("Cannot find a spot! i = %zu\n", i);
 		}
 	}
-	for(size_t i = 1; i < 9*256; i+= 256){
+	for(size_t i = 1; i < 4*256 + 2; i+= 1){
 		hdata* targ = myhmap_get(i);
 		if(targ){
 			printf("Found him! i = %zu, data = %u, id = %zu\n", i, targ->data, targ->id);
@@ -39,7 +40,7 @@ int main(){
 		}
 	}
 
-	for(size_t i = 1; i < 34120; i+= 74){
+	for(size_t i = 1; i < 256 * 8; i+= 1){
 		hdata* targ = myhmap_get(i);
 		if(targ)
 			puts("Bad juju!");

@@ -22,7 +22,7 @@ int main(){
 	//Validate that the empty linked list wont give you anything.
 	lldata* d = myll(0);
 	if(d)exit(1);
-	for(int i = 0; i < 200; i++)
+	for(int i = 0; i < 255; i++)
 	{
 		lldata c; 
 		c.data = table[i%5];
@@ -30,17 +30,17 @@ int main(){
 			puts("Success Placing in linked list!\n");
 			lldata* d = myll(0);
 			if(!d){
-				puts("Unable to verify that it actually got put in the array.\n");
+				printf("Unable to verify that it actually got put in the array. i = %d\n", i);
 				exit(1);
 			}
 		} else {printf("Error. %d\n", i);exit(1);}
 	}
-	for(int i = 0; i < 210; i++){
+	for(int i = 0; i < 277; i++){
 		lldata* d = myll(i);
-		if(i > 199 && d)
+		if(i > 255 && d)
 			printf("Something is awry all right! There seems to be an extra element!\n");
 		else if(d)
-			printf("Its data is %s and it should be %s\n", d->data, table[(199-i)%5]);
+			printf("Its data is %s and it should be %s\n", d->data, table[(254-i)%5]);
 	}
 	//Now we insert something in the middle.
 	{
@@ -57,9 +57,9 @@ int main(){
 			lldata* d = myll(i);
 			if(d){
 				if(i < 30)
-					printf("Its data is %s and it should be %s\n", d->data, table[(199-i)%5]);
+					printf("Its data is %s and it should be %s\n", d->data, table[(254-i)%5]);
 				else if(i > 30)
-					printf("Its data is %s and it should be %s\n", d->data, table[(200-i)%5]);
+					printf("Its data is %s and it should be %s\n", d->data, table[(255-i)%5]);
 				else {
 					printf("Its data is %s and it should be A STINKER~~~~~~~~~~!!!!!!!!!!!!!\n", d->data);
 				}
@@ -67,11 +67,11 @@ int main(){
 		}
 	printf("Removing the stinker... ~~~~~~~~~~~~~~\n");
 	myll_remove(30);
-	for(int i = 0; i < 201; i++){
+	for(int i = 0; i < 257; i++){
 		lldata* d = myll(i);
-		if(i > 199 && d)
+		if(i > 255 && d)
 			printf("Something is awry all right! There seems to be an extra element!\n");
 		else if(d)
-			printf("Its data is %s and it should be %s\n", d->data, table[(199-i)%5]);
+			printf("Its data is %s and it should be %s\n", d->data, table[(254-i)%5]);
 	}
 }

@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 //28 = 2^10 * 2^10 * 2^8, or 256 megabytes.
+FIXEDMEM_BLOCK_EXTERN(myblock, 28);
 FIXEDMEM_BLOCK(myblock, 28);
 
 

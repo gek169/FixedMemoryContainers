@@ -18,13 +18,13 @@ static C* buildt_##A##B##D(){ 	\
 
 #define DYNTREE(type, name, n)							\
 typedef struct{											\
-	type* data;											\
-	void* children[n];									\
+	type* d;											\
+	void* c[n];									\
 } name;													\
 static void name##_init(name* f){						\
-	f->data = NULL;										\
+	f->d = NULL;										\
 	for(size_t i = 0; i < n; i++)						\
-		f->children[i] = NULL;							\
+		f->c[i] = NULL;							\
 }														\
 /*Tree traversal with constant memory usage.*/				\
 /*Optimized for memory usage, not speed*/					\
@@ -33,14 +33,14 @@ static void name##_cleanup(name* f){						\
 	name* cpr = NULL;										\
 	size_t cpi = 0;											\
 	while(1){												\
-		size_t i;int hadchildren = 0;						\
+		size_t i;int hadc = 0;						\
 		for(i = 0; i < n; i++)								\
-		if(c->children[i])									\
-		{cpi = i; cpr = c; c = c->children[i];hadchildren = 1;break;}	\
-		if(hadchildren)continue;							\
-		/*Bottom of the tree. no children.*/				\
-		if(cpr)cpr->children[cpi]	= NULL;					\
-		if(c->data)free(c->data);							\
+		if(c->c[i])									\
+		{cpi = i; cpr = c; c = c->c[i];hadc = 1;break;}	\
+		if(hadc)continue;							\
+		/*Bottom of the tree. no c.*/				\
+		if(cpr)cpr->c[cpi]	= NULL;					\
+		if(c->d)free(c->d);							\
 		if(c != f) free(c); else break;						\
 		c = f; cpr = NULL; cpi = 0;							\
 	}														\

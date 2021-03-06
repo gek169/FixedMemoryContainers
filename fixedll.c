@@ -15,6 +15,7 @@ typedef struct{
 	char* data;
 } lldata;
 
+FIXEDMEM_LL_EXTERN(lldata, myll, 8); //Can support 256 entries.
 FIXEDMEM_LL(lldata, myll, 8); //Can support 256 entries.
 
 int main(){

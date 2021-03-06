@@ -29,10 +29,7 @@ static  C* buildt_##A##B##D(){ 	\
 //Or "vector" if you want to get all computer-sciencey
 
 #define FIXEDMEM_BLOCK(name, pow2)\
-uint8_t name ## _mem [((size_t)1)<<pow2];\
-static const size_t name ## _size = ((size_t)1)<<pow2;\
-static  void* name(void* p) {return (void*)((size_t)( name ## _mem ) + (size_t)p); }\
-static  void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
+uint8_t name ## _mem [((size_t)1)<<pow2];
 
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
 extern uint8_t name ## _mem [((size_t)1)<<pow2];\
@@ -44,56 +41,36 @@ static  void* name##_st(size_t p) {return (void*)(( name ## _mem ) + p); }
 //The hash map!
 
 //Zero is an invalid hash value.
-#define FIXEDMEM_HASHMAP(type, name, pow2width, depth)							\
-HAS_ITEM(type, id, size_t, _has_id_property_test)	\
-static const size_t name ##_width = (((size_t)1)<<pow2width);		\
-static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
-type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
-static  type* name##_get(size_t id){		\
-	type* retval = name##_mem + (id & ( name ##_mask ));\
-	size_t cdep = 0;									\
-	for(size_t i = 0; i < depth; i++){					\
-		if(retval->id == id)							\
-			return retval;								\
-		retval += name ##_width;						\
-	}													\
-	return NULL;										\
-}														\
-static  type* name##_getfree(size_t id){	\
-	type* retval = name##_mem + (id & ( name ##_mask ));\
-	size_t cdep = 0;									\
-	for(size_t i = 0; i < depth; i++){					\
-		if(retval->id == 0)								\
-			return retval;								\
-		retval += name ##_width;						\
-	}													\
-	return NULL;										\
-}														
+#define FIXEDMEM_HASHMAP(type, name, pow2width, depth, alt)							\
+HAS_ITEM(type, id, size_t, _has_id_property_test)								\
+type name##_mem[ (((size_t)1)<<pow2width) * depth ];
 
 
-#define FIXEDMEM_HASHMAP_EXTERN(type, name, pow2width, depth)							\
+#define FIXEDMEM_HASHMAP_EXTERN(type, name, pow2width, depth, alt)							\
 static const size_t name ##_width = (((size_t)1)<<pow2width);		\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;	\
-extern type name##_mem[ (((size_t)1)<<pow2width) * depth ];	\
-static  type* name##_get(size_t id){		\
-	type* retval = name##_mem + (id & ( name ##_mask ));\
-	size_t cdep = 0;									\
-	for(size_t i = 0; i < depth; i++){					\
-		if(retval->id == id)							\
-			return retval;								\
-		retval += name ##_width;						\
-	}													\
-	return NULL;										\
-}														\
-static  type* name##_getfree(size_t id){			\
-	type* retval = name##_mem + (id & ( name ##_mask ));\
-	size_t cdep = 0;									\
-	for(size_t i = 0; i < depth; i++){					\
-		if(retval->id == 0)								\
-			return retval;								\
-		retval += name ##_width;						\
-	}													\
-	return NULL;										\
+extern type name##_mem[ (((size_t)1)<<pow2width) * depth ];			\
+static  type* name##_get(size_t id){								\
+	for(size_t attempt = 0; attempt < alt; attempt++){				\
+		type* retval = name##_mem + ((id+attempt) & ( name ##_mask ));\
+		for(size_t i = 0; i < depth; i++){					\
+			if(retval->id == id)							\
+				return retval;								\
+			retval += name ##_width;						\
+		}													\
+	}														\
+	return NULL;											\
+}															\
+static  type* name##_getfree(size_t id){								\
+	for(size_t attempt = 0; attempt < alt; attempt++){					\
+		type* retval = name##_mem + ((id+attempt) & ( name ##_mask ));	\
+		for(size_t i = 0; i < depth; i++){								\
+			if(retval->id == 0)											\
+				return retval;											\
+			retval += name ##_width;									\
+		}																\
+	}																	\
+	return NULL;													\
 }														
 
 
@@ -106,61 +83,8 @@ static  type* name##_getfree(size_t id){			\
 #define FIXEDMEM_LL(type, name, pow2size)									\
 HAS_ITEM(type, next, size_t, _has_next_property_test)						\
 HAS_ITEM(type, used, char, _has_used_property_test)							\
-static const size_t name##_size = ((size_t)1)<<pow2size;					\
-static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
 type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
-size_t name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	\
-static  size_t name##_getfree(){/*Find a free spot*/					\
-	for(size_t i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
-		if(name##_mem[i].used == 0) return i+1; /*Lua indexing*/			\
-	return name##_size+1;													\
-}																			\
-static  type* name(size_t index){/*Traverse the linked list*/			\
-	/*The user has entered a zero index.*/									\
-	size_t t = (name##_head-1);												\
-	for(size_t i = 0; i < index; i++) 										\
-		if(t > name##_mask || name##_mem[t].used == 0){ 					\
-			return NULL; 													\
-		}else{ /*Don't follow a link from an bad/unused node*/				\
-			t = name##_mem[t].next;											\
- 			if(t==0)return NULL;t--;										\
- 		}/*Follow the link*/												\
-	if(name##_mem[t].used == 0) return NULL; /* Need an additional test*/	\
-	return name##_mem + t;													\
-}																			\
-static  size_t name##_remove(size_t index){							\
-	type* atind = name(index);												\
-	if(!atind) return 0; /*Error- invalid index.*/							\
-	atind->used = 0; /* No longer being used.*/								\
-	if(index == 1){ /*Pop the head.*/										\
-		name##_head = atind->next; atind->next = 0; /*Done*/				\
-		return 1;															\
-	}																		\
-	/*we must set the previous index's next */								\
-	{type* atprevind = name(index - 1);if(!atprevind) return 0;/*Error*/	\
-		atprevind->next = atind->next; 										\
-		atind->next = 0;return 1; /*Success!*/								\
-	}																		\
-}																			\
-static  size_t name##_insert(size_t index, type me){					\
-	size_t di = name##_getfree();/*Destination Index.*/						\
-	me.used = 1;/*The user will not have set it*/							\
-	if(di > name##_size) return 0;	/*Linked list is full!*/				\
-	name##_mem[di-1] = me;	/*Found the location to place our thing.*/		\
-	if(index == 0){	/*Desires to be the new head. First to go fast.*/		\
-		name##_mem[di-1].next = name##_head;								\
-		name##_head = di;	return 1;										\
-	} else {	/*The previous element's next must  be set*/				\
-		type* bruh = name(index-1);	/*Previous element*/					\
-		if(!bruh) return 0; /*Error!*/										\
-		size_t bruh_next_old = bruh->next;/*Get his next*/					\
-		bruh->next = di;/*Set his next*/									\
-		name##_mem[di-1].next = bruh_next_old; /*Set our next*/				\
-		return 1; /*Success!*/												\
-	}																		\
-	return 0;/*Some failure?*/												\
-}
-
+size_t name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	
 
 //External declaration
 #define FIXEDMEM_LL_EXTERN(type, name, pow2size)									\

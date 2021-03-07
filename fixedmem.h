@@ -18,6 +18,12 @@
 #define FIXEDMEM_ALIGN /* a comment*/
 #endif
 
+#ifndef FIXEDMEM_NO_UINTPTR_T
+#define FIXEDMEM_PTR_UINT uintptr_t
+#else
+#define FIXEDMEM_PTR_UINT size_t
+#endif
+
 #define ASSERT_SAME_TYPE(a, b)  ((&(a) == &(b)))
 
 #define HAS_ITEM(A,B,C,D) 				\
@@ -40,7 +46,7 @@ FIXEDMEM_ALIGN size_t name ## _mem [(((size_t)1)<<pow2)/sizeof(size_t)];
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
 FIXEDMEM_ALIGN extern size_t name ## _mem [(((size_t)1)<<pow2)/sizeof(size_t)];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
-static  void* name(void* p) {return (void*)((size_t)((uint8_t*) name ## _mem ) + (size_t)p); }\
+static  void* name(void* p) {return (void*)((FIXEDMEM_PTR_UINT)((uint8_t*) name ## _mem ) + (FIXEDMEM_PTR_UINT)p); }\
 static  void* name##_st(size_t p) {return (void*)(((uint8_t*) name ## _mem ) + p); }
 
 

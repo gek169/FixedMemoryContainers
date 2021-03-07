@@ -2,13 +2,13 @@
 #include <stdio.h>
 
 //name, power of 2. MUST be large enough to hold at least one size_t.
-FIXEDMEM_BLOCK_EXTERN(myblock, 12);
-FIXEDMEM_BLOCK(myblock, 12);
+FIXEDMEM_BLOCK_EXTERN(myblock, 18);
+FIXEDMEM_BLOCK(myblock, 18);
 
 
 int main(){
 	//Check memory alignment.
-	if(1){
+	if(0){
 		printf("Array:, %zx\n", (size_t)myblock_mem);
 		exit(1);
 	}

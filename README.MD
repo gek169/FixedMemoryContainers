@@ -1,4 +1,4 @@
-# Simple, Templated, Intuitive, C++like, Fixed Memory Containers for C, Public Domain
+# Simple, Templated, Intuitive, Reasonably efficient, C++like, Fixed Memory Containers for C99, Public Domain
 
 The fixed memory containers (in fixedmem.h) do not require any malloc or free calls, they perform
 their own memory management on fixed-size global arrays.

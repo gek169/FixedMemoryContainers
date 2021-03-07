@@ -20,20 +20,19 @@ FIXEDMEM_HASHMAP_EXTERN(hdata, myhmap, 8, 2, 2);
 int main(){
 	for(size_t i = 1; i < 256*2+7; i++){
 		hdata mine;
-		mine.id = i;
+		mine.id = i + 3109839;
 		mine.data = i<<1;
-		hdata* targ = myhmap_getfree(i);
+		hdata* targ = myhmap_getfree(mine.id);
 		if(targ){
-			printf("Found a spot! i = %zu\n", i);
 			*targ = mine;
 		} else {
 			printf("Cannot find a spot! i = %zu\n", i);
 		}
 	}
 	for(size_t i = 1; i < 256 *2+7; i++){
-		hdata* targ = myhmap_get(i);
+		hdata* targ = myhmap_get(i + 3109839);
 		if(targ){
-			printf("Found him! i = %zu, data = %u, id = %zu\n", i, targ->data, targ->id);
+			//printf("Found him! i = %zu, data = %u, id = %zu\n", i, targ->data, targ->id);
 			if(i<<1 != targ->data) {printf("This is incorrect.");exit(1);}
 			targ->id = 0; //clear the spot.
 		} else {

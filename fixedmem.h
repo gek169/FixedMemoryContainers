@@ -32,7 +32,8 @@ static  C* buildt_##A##B##D(){ 	\
 
 //The basic fixed memory block!
 //Or "vector" if you want to get all computer-sciencey
-
+//It's aligned way beyond what you need for your processor, so it can store any type.
+//As long as the pointers you use in your program are aligned, so will the "real" pointers obtained by offsetting by name##_mem
 #define FIXEDMEM_BLOCK(name, pow2)\
 FIXEDMEM_ALIGN size_t name ## _mem [(((size_t)1)<<pow2)/sizeof(size_t)];
 

@@ -22,7 +22,7 @@ void create_c(mybin* t, uint8_t iter){
 }
 int main(){
 	b.d = malloc(200);
-	create_c(&b, 13);
+	create_c(&b, 20);
 	mybin_cleanup(&b);
 	//End of program.
 }

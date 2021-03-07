@@ -8,7 +8,7 @@ FIXEDMEM_BLOCK(myblock, 12);
 
 int main(){
 	//Check memory alignment.
-	if(0){
+	if(1){
 		printf("Array:, %zx\n", (size_t)myblock_mem);
 		exit(1);
 	}

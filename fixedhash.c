@@ -3,7 +3,7 @@
 #include <stdlib.h>
 typedef struct {
 	size_t id; //Required by hashmap. note that id = 0 is an invalid hash value, it registers as "unused."
-	unsigned int data;
+	size_t data;
 } hdata;
 
 //typename, name of the hashmap, power of 2 of the width, depth.
@@ -18,10 +18,10 @@ FIXEDMEM_HASHMAP(hdata, myhmap, 8, 4, 2);
 FIXEDMEM_HASHMAP_EXTERN(hdata, myhmap, 8, 4, 2);
 
 int main(){
-	for(size_t i = 1; i < 4*256 + 2; i+= 1){
+	for(size_t i = 1; i < 1239033; i+= 337){
 		hdata mine;
 		mine.id = i;
-		mine.data = rand();
+		mine.data = i<<1;
 		hdata* targ = myhmap_getfree(i);
 		if(targ){
 			printf("Found a spot! i = %zu\n", i);
@@ -30,17 +30,18 @@ int main(){
 			printf("Cannot find a spot! i = %zu\n", i);
 		}
 	}
-	for(size_t i = 1; i < 4*256 + 2; i+= 1){
+	for(size_t i = 1; i < 1239033; i+= 337){
 		hdata* targ = myhmap_get(i);
 		if(targ){
 			printf("Found him! i = %zu, data = %u, id = %zu\n", i, targ->data, targ->id);
+			if(i<<1 != targ->data) {printf("This is incorrect.");exit(1);}
 			targ->id = 0; //clear the spot.
 		} else {
 			printf("Cannot find my boy! i = %zu\n", i);
 		}
 	}
 
-	for(size_t i = 1; i < 256 * 8; i+= 1){
+	for(size_t i = 1; i < 1239033; i+= 337){
 		hdata* targ = myhmap_get(i);
 		if(targ)
 			puts("Bad juju!");

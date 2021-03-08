@@ -41,10 +41,10 @@ static  C* buildt_##A##B##D(){ 	\
 //It's aligned way beyond what you need for your processor, so it can store any type.
 //As long as the pointers you use in your program are aligned, so will the "real" pointers obtained by offsetting by name##_mem
 #define FIXEDMEM_BLOCK(name, pow2)\
-FIXEDMEM_ALIGN uint8_t name ## _mem [(((size_t)1)<<pow2)];
+FIXEDMEM_ALIGN unsigned char name ## _mem [(((size_t)1)<<pow2)];
 
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
-FIXEDMEM_ALIGN extern uint8_t name ## _mem [(((size_t)1)<<pow2)];\
+FIXEDMEM_ALIGN extern unsigned char name ## _mem [(((size_t)1)<<pow2)];\
 static const size_t name ## _size = ((size_t)1)<<pow2;\
 static  void* name(void* p) {return (void*)((FIXEDMEM_PTR_UINT)( name ## _mem ) + (FIXEDMEM_PTR_UINT)p); }\
 static  void* name##_st(size_t p) {return (void*)(name ## _mem  + p); }

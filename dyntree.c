@@ -24,5 +24,4 @@ int main(){
 	b.d = malloc(200);
 	create_c(&b, 20);
 	mybin_cleanup(&b);
-	//End of program.
 }

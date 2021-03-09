@@ -4,17 +4,13 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define ASSERT_SAME_TYPE(a, b)  ((&(a) == &(b)))
+#ifndef DYNTREE_SIZE_T
+#define DYNTREE_SIZE_T size_t
+#endif
 
-#define HAS_ITEM(A,B,C,D) 				\
-static C* buildt_##A##B##D(){ 	\
-  A t; 									\
-  C q;									\
-  int f = ASSERT_SAME_TYPE(q, t.B);		\
-  C* ret = &( t . B );					\
-  return ret;							\
-}
-
+#ifndef DYNTREE_FREE
+#define DYNTREE_FREE free
+#endif
 
 #define DYNTREE(type, name, n)							\
 typedef struct{											\
@@ -23,7 +19,7 @@ typedef struct{											\
 } name;													\
 static void name##_init(name* f){						\
 	f->d = NULL;										\
-	for(size_t i = 0; i < n; i++)						\
+	for(DYNTREE_SIZE_T i = 0; i < n; i++)						\
 		f->c[i] = NULL;							\
 }														\
 /*Tree traversal with constant memory usage.*/				\
@@ -31,17 +27,17 @@ static void name##_init(name* f){						\
 static void name##_cleanup(name* f){						\
 	name* c = f;											\
 	name* cpr = NULL;										\
-	size_t cpi = 0;											\
+	DYNTREE_SIZE_T cpi = 0;											\
 	while(1){												\
-		size_t i;int hadc = 0;						\
+		DYNTREE_SIZE_T i;int hadc = 0;						\
 		for(i = 0; i < n; i++)								\
 		if(c->c[i])									\
 		{cpi = i; cpr = c; c = c->c[i];hadc = 1;break;}	\
 		if(hadc)continue;							\
 		/*Bottom of the tree. no c.*/				\
 		if(cpr)cpr->c[cpi]	= NULL;					\
-		if(c->d)free(c->d);							\
-		if(c != f) free(c); else break;						\
+		if(c->d)DYNTREE_FREE(c->d);							\
+		if(c != f) DYNTREE_FREE(c); else break;						\
 		c = f; cpr = NULL; cpi = 0;							\
 	}														\
 															\

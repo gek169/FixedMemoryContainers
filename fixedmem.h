@@ -24,6 +24,10 @@
 #define FIXEDMEM_PTR_UINT size_t
 #endif
 
+#ifndef FIXEDMEM_SIZE_T
+#define FIXEDMEM_SIZE_T size_t
+#endif
+
 #define ASSERT_SAME_TYPE(a, b)  ((&(a) == &(b)))
 
 #define HAS_ITEM(A,B,C,D) 				\
@@ -41,30 +45,30 @@ static  C* buildt_##A##B##D(){ 	\
 //It's aligned way beyond what you need for your processor, so it can store any type.
 //As long as the pointers you use in your program are aligned, so will the "real" pointers obtained by offsetting by name##_mem
 #define FIXEDMEM_BLOCK(name, pow2)\
-FIXEDMEM_ALIGN unsigned char name ## _mem [(((size_t)1)<<pow2)];
+FIXEDMEM_ALIGN unsigned char name ## _mem [(((FIXEDMEM_SIZE_T)1)<<pow2)];
 
 #define FIXEDMEM_BLOCK_EXTERN(name, pow2)\
-FIXEDMEM_ALIGN extern unsigned char name ## _mem [(((size_t)1)<<pow2)];\
-static const size_t name ## _size = ((size_t)1)<<pow2;\
+FIXEDMEM_ALIGN extern unsigned char name ## _mem [(((FIXEDMEM_SIZE_T)1)<<pow2)];\
+static const FIXEDMEM_SIZE_T name ## _size = ((FIXEDMEM_SIZE_T)1)<<pow2;\
 static  void* name(void* p) {return (void*)((FIXEDMEM_PTR_UINT)( name ## _mem ) + (FIXEDMEM_PTR_UINT)p); }\
-static  void* name##_st(size_t p) {return (void*)(name ## _mem  + p); }
+static  void* name##_st(FIXEDMEM_SIZE_T p) {return (void*)(name ## _mem  + p); }
 
 
 //The hash map!
 
 //Zero is an invalid hash value.
 #define FIXEDMEM_HASHMAP(type, name, pow2width, depth, alt)							\
-type name##_mem[ (((size_t)1)<<pow2width) * depth ];
+type name##_mem[ (((FIXEDMEM_SIZE_T)1)<<pow2width) * depth ];
 
 
 #define FIXEDMEM_HASHMAP_EXTERN(type, name, pow2width, depth, alt)			\
-static const size_t name ##_width = (((size_t)1)<<pow2width);				\
-static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;			\
-extern type name##_mem[ (((size_t)1)<<pow2width) * depth ];					\
-static  type* name##_get(size_t id){										\
-	for(size_t attempt = 0; attempt < alt; attempt++){				\
+static const FIXEDMEM_SIZE_T name ##_width = (((FIXEDMEM_SIZE_T)1)<<pow2width);				\
+static const FIXEDMEM_SIZE_T name ##_mask = (((FIXEDMEM_SIZE_T)1)<<pow2width) - 1;			\
+extern type name##_mem[ (((FIXEDMEM_SIZE_T)1)<<pow2width) * depth ];					\
+static  type* name##_get(FIXEDMEM_SIZE_T id){										\
+	for(FIXEDMEM_SIZE_T attempt = 0; attempt < alt; attempt++){				\
 			type* retval = name##_mem + ((id &  name ##_mask ) +attempt) * depth;\
-			for(size_t i = 0; i < depth; i++){					\
+			for(FIXEDMEM_SIZE_T i = 0; i < depth; i++){					\
 				if(retval->id == id)							\
 					return retval;								\
 				retval++;										\
@@ -72,10 +76,10 @@ static  type* name##_get(size_t id){										\
 		}														\
 	return NULL;											\
 }															\
-static  type* name##_getfree(size_t id){					\
-	for(size_t attempt = 0; attempt < alt; attempt++){				\
+static  type* name##_getfree(FIXEDMEM_SIZE_T id){					\
+	for(FIXEDMEM_SIZE_T attempt = 0; attempt < alt; attempt++){				\
 		type* retval = name##_mem + ((id &  name ##_mask ) +attempt) * depth;\
-		for(size_t i = 0; i < depth; i++){					\
+		for(FIXEDMEM_SIZE_T i = 0; i < depth; i++){					\
 			if(retval->id == 0)								\
 				return retval;								\
 			retval++;										\
@@ -92,24 +96,24 @@ static  type* name##_getfree(size_t id){					\
 //Indices are Lua-style, 0 is the invalid index, internally.
 //Externally, the user should experience the library as if 0-based indices are used.
 #define FIXEDMEM_LL(type, name, pow2size)									\
-type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
-size_t name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	
+type name##_mem[((FIXEDMEM_SIZE_T)1)<<pow2size];/*Initialized to zero.*/				\
+FIXEDMEM_SIZE_T name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	
 
 //External declaration
 #define FIXEDMEM_LL_EXTERN(type, name, pow2size)									\
-static const size_t name##_size = ((size_t)1)<<pow2size;					\
-static const size_t name##_mask = (((size_t)1)<<pow2size) - 1;				\
-extern type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
-extern size_t name ## _head; /*The head of the linked list. 0 means its empty.*/	\
-static  size_t name##_getfree(){/*Find a free spot*/					\
-	for(size_t i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
+static const FIXEDMEM_SIZE_T name##_size = ((FIXEDMEM_SIZE_T)1)<<pow2size;					\
+static const FIXEDMEM_SIZE_T name##_mask = (((FIXEDMEM_SIZE_T)1)<<pow2size) - 1;				\
+extern type name##_mem[((FIXEDMEM_SIZE_T)1)<<pow2size];/*Initialized to zero.*/				\
+extern FIXEDMEM_SIZE_T name ## _head; /*The head of the linked list. 0 means its empty.*/	\
+static  FIXEDMEM_SIZE_T name##_getfree(){/*Find a free spot*/					\
+	for(FIXEDMEM_SIZE_T i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
 		if(name##_mem[i].used == 0) return i+1; /*Lua indexing*/			\
 	return name##_size+1;													\
 }																			\
-static  type* name(size_t index){/*Traverse the linked list*/			\
+static  type* name(FIXEDMEM_SIZE_T index){/*Traverse the linked list*/			\
 	/*The user has entered a zero index.*/									\
-	size_t t = (name##_head-1);												\
-	for(size_t i = 0; i < index; i++) 										\
+	FIXEDMEM_SIZE_T t = (name##_head-1);												\
+	for(FIXEDMEM_SIZE_T i = 0; i < index; i++) 										\
 		if(t > name##_mask || name##_mem[t].used == 0){ 					\
 			return NULL; 													\
 		}else{ /*Don't follow a link from an bad/unused node*/				\
@@ -119,7 +123,7 @@ static  type* name(size_t index){/*Traverse the linked list*/			\
 	if(name##_mem[t].used == 0) return NULL; /* Need an additional test*/	\
 	return name##_mem + t;													\
 }																			\
-static  size_t name##_remove(size_t index){							\
+static  FIXEDMEM_SIZE_T name##_remove(FIXEDMEM_SIZE_T index){							\
 	type* atind = name(index);												\
 	if(!atind) return 0; /*Error- invalid index.*/							\
 	atind->used = 0; /* No longer being used.*/								\
@@ -133,8 +137,8 @@ static  size_t name##_remove(size_t index){							\
 		atind->next = 0;return 1; /*Success!*/								\
 	}																		\
 }																			\
-static  size_t name##_insert(size_t index, type me){					\
-	size_t di = name##_getfree();/*Destination Index.*/						\
+static  FIXEDMEM_SIZE_T name##_insert(FIXEDMEM_SIZE_T index, type me){					\
+	FIXEDMEM_SIZE_T di = name##_getfree();/*Destination Index.*/						\
 	me.used = 1;/*The user will not have set it*/							\
 	if(di > name##_size) return 0;	/*Linked list is full!*/				\
 	name##_mem[di-1] = me;	/*Found the location to place our thing.*/		\
@@ -144,7 +148,7 @@ static  size_t name##_insert(size_t index, type me){					\
 	} else {	/*The previous element's next must  be set*/				\
 		type* bruh = name(index-1);	/*Previous element*/					\
 		if(!bruh) return 0; /*Error!*/										\
-		size_t bruh_next_old = bruh->next;/*Get his next*/					\
+		FIXEDMEM_SIZE_T bruh_next_old = bruh->next;/*Get his next*/					\
 		bruh->next = di;/*Set his next*/									\
 		name##_mem[di-1].next = bruh_next_old; /*Set our next*/				\
 		return 1; /*Success!*/												\

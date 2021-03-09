@@ -92,8 +92,6 @@ static  type* name##_getfree(size_t id){					\
 //Indices are Lua-style, 0 is the invalid index, internally.
 //Externally, the user should experience the library as if 0-based indices are used.
 #define FIXEDMEM_LL(type, name, pow2size)									\
-HAS_ITEM(type, next, size_t, name##type##_has_next_property_test)						\
-HAS_ITEM(type, used, char, name##type##_has_used_property_test)							\
 type name##_mem[((size_t)1)<<pow2size];/*Initialized to zero.*/				\
 size_t name ## _head = 0; /*The head of the linked list. 0 means its empty.*/	
 

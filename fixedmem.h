@@ -62,14 +62,14 @@ static const size_t name ##_width = (((size_t)1)<<pow2width);				\
 static const size_t name ##_mask = (((size_t)1)<<pow2width) - 1;			\
 extern type name##_mem[ (((size_t)1)<<pow2width) * depth ];					\
 static  type* name##_get(size_t id){										\
-	{const size_t end = depth * alt;										\
-		type* retval = name##_mem + (id &  name ##_mask ) * depth;			\
-		for(size_t i = 0; i < end; i++){									\
-			if(retval->id == id)							\
-				return retval;								\
-			retval++;										\
-		}													\
-	}														\
+	for(size_t attempt = 0; attempt < alt; attempt++){				\
+			type* retval = name##_mem + ((id &  name ##_mask ) +attempt) * depth;\
+			for(size_t i = 0; i < depth; i++){					\
+				if(retval->id == id)							\
+					return retval;								\
+				retval++;										\
+			}													\
+		}														\
 	return NULL;											\
 }															\
 static  type* name##_getfree(size_t id){					\

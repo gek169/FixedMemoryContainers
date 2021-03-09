@@ -43,6 +43,6 @@ int main(){
 	for(size_t i = 1; i < 256 *2+7; i++){
 		hdata* targ = myhmap_get(i);
 		if(targ)
-			puts("Bad juju!");
+			puts("Bad juju!\n");
 	}
 }

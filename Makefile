@@ -8,6 +8,7 @@ all:
 	$(CC) $(CFLAGS) fixedmem.c -o fixedmem.out
 	$(CC) $(CFLAGS) fixedll.c -o fixedll.out
 	$(CC) $(CFLAGS) dyntree.c -o dyntree.out
+	$(CC) $(CFLAGS) bigstack.c -o bigstack.out
 
 clean:
 	rm -f *.exe *.out *.o

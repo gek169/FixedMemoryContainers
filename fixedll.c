@@ -68,10 +68,15 @@ int main(){
 	printf("Removing the stinker... ~~~~~~~~~~~~~~\n");
 	myll_remove(30);
 	for(int i = 0; i < 257; i++){
-		lldata* d = myll(i);
+		lldata* d = myll(0);
+		
 		if(i > 255 && d)
 			printf("Something is awry all right! There seems to be an extra element!\n");
-		else if(d)
-			printf("Its data is %s and it should be %s\n", d->data, table[(254-i)%5]);
+		else if(d){
+			printf("<CHK> Its data is %s and it should be %s\n", d->data, table[(254-i)%5]);
+			myll_remove(0);
+		}
+		
 	}
+	if(myll(0)) puts("\nBAD JUJU\n");
 }

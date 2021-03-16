@@ -105,29 +105,31 @@ static const FIXEDMEM_SIZE_T name##_size = ((FIXEDMEM_SIZE_T)1)<<pow2size;					\
 static const FIXEDMEM_SIZE_T name##_mask = (((FIXEDMEM_SIZE_T)1)<<pow2size) - 1;				\
 extern type name##_mem[((FIXEDMEM_SIZE_T)1)<<pow2size];/*Initialized to zero.*/				\
 extern FIXEDMEM_SIZE_T name ## _head; /*The head of the linked list. 0 means its empty.*/	\
-static  FIXEDMEM_SIZE_T name##_getfree(){/*Find a free spot*/					\
+static FIXEDMEM_SIZE_T name##_internal_getfree(){/*Find a free spot*/					\
 	for(FIXEDMEM_SIZE_T i = 0; i < name##_size; i++)	/*Linearly search for free spot*/\
 		if(name##_mem[i].used == 0) return i+1; /*Lua indexing*/			\
 	return name##_size+1;													\
 }																			\
-static  type* name(FIXEDMEM_SIZE_T index){/*Traverse the linked list*/			\
+static  type* name(FIXEDMEM_SIZE_T index){/*Traverse the linked list*/		\
 	/*The user has entered a zero index.*/									\
-	FIXEDMEM_SIZE_T t = (name##_head-1);												\
-	for(FIXEDMEM_SIZE_T i = 0; i < index; i++) 										\
+	FIXEDMEM_SIZE_T t = (name##_head-1);									\
+	for(FIXEDMEM_SIZE_T i = 0; i < index; i++) 								\
 		if(t > name##_mask || name##_mem[t].used == 0){ 					\
 			return NULL; 													\
 		}else{ /*Don't follow a link from an bad/unused node*/				\
 			t = name##_mem[t].next;											\
- 			if(t==0)return NULL;t--;										\
+ 			if(t==0)return NULL;											\
+ 			t--;															\
  		}/*Follow the link*/												\
 	if(name##_mem[t].used == 0) return NULL; /* Need an additional test*/	\
 	return name##_mem + t;													\
 }																			\
 static  FIXEDMEM_SIZE_T name##_remove(FIXEDMEM_SIZE_T index){							\
+	/*User has entered a zero-based index.*/								\
 	type* atind = name(index);												\
 	if(!atind) return 0; /*Error- invalid index.*/							\
 	atind->used = 0; /* No longer being used.*/								\
-	if(index == 1){ /*Pop the head.*/										\
+	if(index == 0){ /*Pop the head. NOT LUA INDEXED!!!*/					\
 		name##_head = atind->next; atind->next = 0; /*Done*/				\
 		return 1;															\
 	}																		\
@@ -138,18 +140,18 @@ static  FIXEDMEM_SIZE_T name##_remove(FIXEDMEM_SIZE_T index){							\
 	}																		\
 }																			\
 static  FIXEDMEM_SIZE_T name##_insert(FIXEDMEM_SIZE_T index, type me){					\
-	FIXEDMEM_SIZE_T di = name##_getfree();/*Destination Index.*/						\
+	FIXEDMEM_SIZE_T di = name##_internal_getfree();/*Destination Index. it is lua-indexed.*/		\
 	me.used = 1;/*The user will not have set it*/							\
 	if(di > name##_size) return 0;	/*Linked list is full!*/				\
 	name##_mem[di-1] = me;	/*Found the location to place our thing.*/		\
 	if(index == 0){	/*Desires to be the new head. First to go fast.*/		\
 		name##_mem[di-1].next = name##_head;								\
-		name##_head = di;	return 1;										\
+		name##_head = di;	return 1; /*Lua Index.*/										\
 	} else {	/*The previous element's next must  be set*/				\
 		type* bruh = name(index-1);	/*Previous element*/					\
 		if(!bruh) return 0; /*Error!*/										\
-		FIXEDMEM_SIZE_T bruh_next_old = bruh->next;/*Get his next*/					\
-		bruh->next = di;/*Set his next*/									\
+		FIXEDMEM_SIZE_T bruh_next_old = bruh->next;/*Get his next*/			\
+		bruh->next = di;/*Set his next this is a LUA INDEX*/				\
 		name##_mem[di-1].next = bruh_next_old; /*Set our next*/				\
 		return 1; /*Success!*/												\
 	}																		\

@@ -34,7 +34,6 @@ void create_c(mybin* t, uint8_t iter){
 	}
 }
 int main(){
-	
 	b.d = calloc(1,200);
 	create_c(&b, 20);
 	mybin_cleanup(&b);
@@ -67,4 +66,10 @@ int main(){
 		for(unsigned i = 0; i < mydynblock_getsize(&bruh2); i++)
 		printf("value at %u is is %u\n", i, *mydynblock_get(&bruh2, i));
 	mydynblock_cleanup(&bruh2);
+	#define LOOP(v, e)\
+	for(unsigned long long v = 0, __internal_##v = 0; __internal_##v < e; __internal_##v++, v = __internal_##v)
+	LOOP(i, 10)
+	{
+		printf("value is %lld", i++);
+	}
 }

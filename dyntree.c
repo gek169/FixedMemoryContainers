@@ -1,8 +1,10 @@
+
+
+#include "dynmemtree.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "dynmemtree.h"
 //define types.
 DYNTREE(char*, mybin, 4);
 //Table type

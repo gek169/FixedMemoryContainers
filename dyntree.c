@@ -68,7 +68,7 @@ int main(){
 	mydynblock_cleanup(&bruh2);
 	#define LOOP(v, e)\
 	for(unsigned long long v = 0, __internal_##v = 0,__internal_test_##v[2*(e>0)-1]; __internal_##v < e; __internal_##v++, v = __internal_##v)
-	LOOP(i, 10)
+	LOOP(i,1)
 	{
 		printf("value is %lld", i++);
 	}

@@ -28,6 +28,10 @@ Dynamic memory containers:
 
 * An n-tree implementation with an arbitrary number of children decided at compiletime. Not declared as global, but rather typedef'd
 
+* table. a safely-indexed array of pointers with lazy allocation.
+
+
+
 has a naive (hacky) but non-recursive destructor.
 
 * the BIG STACK. allows you to push blocks of memory (of size BIGSTACK_ALIGNMENT) or pop them, with impunity.

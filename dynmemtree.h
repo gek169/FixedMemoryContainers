@@ -21,14 +21,14 @@
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
-	assert(n > 0); assert(f);\
+	assert(n > 0);\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 	return f->d + i;\
 }\
 static void name##_cleanup(name* f){\
-	assert(n > 0); assert(f);\
+	assert(n > 0);\
 }
 
 
@@ -36,7 +36,7 @@ static void name##_cleanup(name* f){\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
-	assert(n > 0); assert(f);\
+	assert(n > 0);\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
 		f->d[i] = NULL;\
 }\
@@ -44,8 +44,8 @@ static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not avail
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 	if(f->d[i]) return f->d[i];\
 	f->d[i] = (type*)DYNTREE_ALLOC(sizeof(type));\
-	if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failre.*/\
-	memset(f->d[i], 0, sizeof(type)); /*Check*/\
+	if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failure.*/\
+	memset(f->d[i], 0, sizeof(type)); /*Set to zero.*/\
 	return f->d[i];\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\

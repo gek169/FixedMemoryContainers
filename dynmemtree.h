@@ -115,7 +115,7 @@ static void name##_cleanup(name* f){\
 }
 
 
-#define DYNTREE(type, name, n)							\
+#define DYNTREE(type, name, n, destructor)				\
 typedef struct{											\
 	type* d;											\
 	void* c[n];											\
@@ -139,7 +139,7 @@ static void name##_cleanup(name* f){						\
 		if(hadc)continue;									\
 		/*Bottom of the tree. no c.*/						\
 		if(cpr)cpr->c[cpi]	= NULL;							\
-		if(c->d)DYNTREE_FREE(c->d);							\
+		if(c->d){destructor(c->d); DYNTREE_FREE(c->d);}		\
 		if(c != f) DYNTREE_FREE(c); else break;				\
 		c = f; cpr = NULL; cpi = 0;							\
 	}														\

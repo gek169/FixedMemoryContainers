@@ -7,9 +7,10 @@
 #include <string.h>
 typedef unsigned int uint;
 static inline void uint_cleanup_dummy(uint* a){(void)a;}
+static inline void charp_cleanup_dummy(char** a){(void)a;}
 static inline void uint_constructor_dummy(uint* a){*a = 0;}
 //define types.
-DYNTREE(char*, mybin, 4);
+DYNTREE(char*, mybin, 4, charp_cleanup_dummy);
 //Table type
 TABLE(uint, mytable, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //Block- array.
@@ -33,11 +34,11 @@ void create_c(mybin* t, uint8_t iter){
 	}
 }
 int main(){
-	/*
+	
 	b.d = calloc(1,200);
 	create_c(&b, 20);
 	mybin_cleanup(&b);
-	*/
+	
 	mytable q;
 	mytable_init(&q);
 	*mytable_lazy_get(&q, 3) = 5;

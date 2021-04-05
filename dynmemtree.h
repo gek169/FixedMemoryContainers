@@ -82,7 +82,7 @@ static DYNTREE_SIZE_T name##_getsize(name *f){\
 }\
 static void name##_cleanup(name* f){\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1)); i++)\
-			destructor(f->d + i);\
+		destructor(f->d + i);\
 	DYNTREE_FREE(f->d);\
 }
 
@@ -99,8 +99,8 @@ static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not avail
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 	if(f->d[i]) return f->d[i];\
 	f->d[i] = (type*)DYNTREE_ALLOC(sizeof(type));\
-	constructor(f->d[i]);\
 	if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failure.*/\
+	constructor(f->d[i]);\
 	return f->d[i];\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\

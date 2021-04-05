@@ -63,9 +63,16 @@ static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
 	f->pow2size = initsize;\
 }\
 static void name##_resize(name* f, DYNTREE_SIZE_T initsize){\
+	if(initsize == f->pow2size) return;\
+	if(initsize < f->pow2size){/*New size is smaller than old size.*/\
+		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
+		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
+		i++)\
+			destructor(f->d + i);\
+	}\
 	f->d = DYNTREE_REALLOC(f->d, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1))  * sizeof(type));\
 	if(!f->d) abort();\
-	{/*New size is larger than old size.*/\
+	if(initsize > f->pow2size){/*New size is larger than old size.*/\
 		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
 		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
 		i++)\
@@ -106,6 +113,10 @@ static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not avail
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 	return f->d[i];\
+}\
+static void name##_remove(name* f, DYNTREE_SIZE_T i){\
+	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	if(f->d[i]) destructor(f->d[i]);\
 }\
 static void name##_cleanup(name* f){\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\

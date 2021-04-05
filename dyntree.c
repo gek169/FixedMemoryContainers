@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 typedef unsigned int uint;
-static inline void uint_cleanup_dummy(uint* a){(void)a;}
+static inline void uint_cleanup_dummy(uint* a){printf("Cleaning up %u\n", *a);}
 static inline void charp_cleanup_dummy(char** a){(void)a;}
 static inline void uint_constructor_dummy(uint* a){*a = 0;}
 //define types.
@@ -62,7 +62,8 @@ int main(){
 	mydynblock_init(&bruh2, 3);
 	*mydynblock_get(&bruh2, 901237) = 5;
 	*mydynblock_get(&bruh2, 375) = 9;
-	mydynblock_resize(&bruh2, 4);
+	mydynblock_resize(&bruh2, 5);
+	mydynblock_resize(&bruh2, 3);
 		for(unsigned i = 0; i < mydynblock_getsize(&bruh2); i++)
 		printf("value at %u is is %u\n", i, *mydynblock_get(&bruh2, i));
 	mydynblock_cleanup(&bruh2);

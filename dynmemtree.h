@@ -3,9 +3,20 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <assert.h>
+
 #ifndef DYNTREE_SIZE_T
 #define DYNTREE_SIZE_T size_t
+#endif
+
+#ifdef DYNTREE_DEBUG
+
+#ifndef DYNTREE_ASSERT
+#include <assert.h>
+#define DYNTREE_ASSERT(a) assert(a)
+#endif
+
+#else
+#define DYNTREE_ASSERT(a) /*a comment*/
 #endif
 
 #ifndef DYNTREE_FREE
@@ -25,7 +36,7 @@
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
-	assert(n > 0);\
+	DYNTREE_ASSERT(n > 0);\
 	memset(f, 0, sizeof(name));\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
@@ -35,13 +46,13 @@ static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
 static void name##_cleanup(name* f){\
 	/*Nothing needs to be done. This type has no dynamic memory usage.*/\
-	assert(n > 0);\
+	DYNTREE_ASSERT(n > 0);\
 }
 
 #define DYNBLOCK(type, name)\
 typedef struct{type* d; DYNTREE_SIZE_T pow2size;} name;\
 static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
-	assert(initsize > 0);\
+	DYNTREE_ASSERT(initsize > 0);\
 	f->d = DYNTREE_REALLOC(NULL, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type));\
 	if(!f->d) abort();\
 	memset(f->d, 0, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type) );\
@@ -73,7 +84,7 @@ static void name##_cleanup(name* f){\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
-	assert(n > 0);\
+	DYNTREE_ASSERT(n > 0);\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
 		f->d[i] = NULL;\
 }\

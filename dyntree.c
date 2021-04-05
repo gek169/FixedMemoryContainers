@@ -6,7 +6,11 @@
 //define types.
 DYNTREE(char*, mybin, 4);
 //Table type
-TABLE(unsigned int, mytable, 4);
+TABLE(unsigned int, mytable, 3);
+//Block- array.
+BLOCK(unsigned int, myblock, 3);
+//Dynblock- a vector.
+DYNBLOCK(unsigned int, mydynblock);
 
 
 mybin b = (mybin){0, {0}}; //When declared global, it is already in its initialized state.
@@ -24,9 +28,11 @@ void create_c(mybin* t, uint8_t iter){
 	}
 }
 int main(){
+	/*
 	b.d = calloc(1,200);
 	create_c(&b, 20);
 	mybin_cleanup(&b);
+	*/
 	mytable q;
 	mytable_init(&q);
 	*mytable_lazy_get(&q, 3) = 5;
@@ -35,4 +41,23 @@ int main(){
 	for(unsigned i = 0; i < mytable_size; i++)
 		if(mytable_get(&q, i))
 			printf("value at %u is is %u\n", i, *mytable_lazy_get(&q, i));
+	mytable_cleanup(&q);
+	puts("\n\n");
+	myblock bruh;
+	myblock_init(&bruh);
+	*myblock_get(&bruh, 901237) = 5;
+	*myblock_get(&bruh, 375) = 9;
+	for(unsigned i = 0; i < myblock_size; i++)
+		printf("value at %u is is %u\n", i, *myblock_get(&bruh, i));
+	myblock_cleanup(&bruh);
+	
+	puts("\n\n");
+	mydynblock bruh2;
+	mydynblock_init(&bruh2, 3);
+	*mydynblock_get(&bruh2, 901237) = 5;
+	*mydynblock_get(&bruh2, 375) = 9;
+	mydynblock_resize(&bruh2, 4);
+		for(unsigned i = 0; i < mydynblock_getsize(&bruh2); i++)
+		printf("value at %u is is %u\n", i, *mydynblock_get(&bruh2, i));
+	mydynblock_cleanup(&bruh2);
 }

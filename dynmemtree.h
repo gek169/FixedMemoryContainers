@@ -17,20 +17,57 @@
 #endif
 
 
+#ifndef DYNTREE_REALLOC
+#define DYNTREE_REALLOC realloc
+#endif
+
 #define BLOCK(type, name, n)\
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
 	assert(n > 0);\
+	memset(f, 0, sizeof(name));\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 	return f->d + i;\
 }\
+static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
 static void name##_cleanup(name* f){\
+	/*Nothing needs to be done. This type has no dynamic memory usage.*/\
 	assert(n > 0);\
 }
 
+#define DYNBLOCK(type, name)\
+typedef struct{type* d; DYNTREE_SIZE_T pow2size;} name;\
+static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
+	assert(initsize > 0);\
+	f->d = DYNTREE_REALLOC(NULL, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type));\
+	if(!f->d) abort();\
+	memset(f->d, 0, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type) );\
+	f->pow2size = initsize;\
+}\
+static void name##_resize(name* f, DYNTREE_SIZE_T initsize){\
+	f->d = DYNTREE_REALLOC(f->d, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1))  * sizeof(type));\
+	if(!f->d) abort();\
+	{/*New size is larger than old size.*/\
+		for(size_t i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
+		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
+		i++)\
+			memset(f->d + i, 0, sizeof(type));\
+	}\
+	f->pow2size = initsize;\
+}\
+static type* name##_get(name* f, DYNTREE_SIZE_T i){\
+	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1)) - 1;\
+	return f->d + i;\
+}\
+static DYNTREE_SIZE_T name##_getsize(name *f){\
+	return ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
+}\
+static void name##_cleanup(name* f){\
+	DYNTREE_FREE(f->d);\
+}
 
 #define TABLE(type, name, n)\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
@@ -40,6 +77,7 @@ static void name##_init(name* f){\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
 		f->d[i] = NULL;\
 }\
+static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
 static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not available*/\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 	if(f->d[i]) return f->d[i];\

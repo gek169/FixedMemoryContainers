@@ -36,6 +36,7 @@ has a naive (hacky) but non-recursive destructor.
 
 * Block. a safely indexed array. Size is specified as a power of two.
 
+* Dynblock. A dynamically sized, safely indexed array which uses realloc.
 
 Dynamic memory containers which are not typedef'd but are declared globally:
 

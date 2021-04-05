@@ -4,15 +4,15 @@
 
 #include "dynmemtree.h"
 
-DYNTREE(void, mybin, 2);
+DYNTREE(char*, mybin, 4);
 
-mybin b; //When declared global, it is already in its initialized state.
+mybin b = (mybin){0, {0}}; //When declared global, it is already in its initialized state.
 
 void create_c(mybin* t, uint8_t iter){
 	mybin* d1 = calloc(1, sizeof(mybin));
-	d1->d = malloc(10);
+	d1->d = calloc(1,10);
 	mybin* d2 = calloc(1, sizeof(mybin));
-	d2->d = malloc(10);
+	d2->d = calloc(1,10);
 	t->c[0] = d1;
 	t->c[1] = d2;
 	if(iter > 1){
@@ -21,7 +21,7 @@ void create_c(mybin* t, uint8_t iter){
 	}
 }
 int main(){
-	b.d = malloc(200);
+	b.d = calloc(1,200);
 	create_c(&b, 20);
 	mybin_cleanup(&b);
 }

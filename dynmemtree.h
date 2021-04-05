@@ -16,11 +16,27 @@
 #define DYNTREE_ALLOC malloc
 #endif
 
+
+#define BLOCK(type, name, n)\
+typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
+static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
+static void name##_init(name* f){\
+	assert(n > 0); assert(f);\
+}\
+static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
+	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	return f->d + i;\
+}\
+static void name##_cleanup(name* f){\
+	assert(n > 0); assert(f);\
+}
+
+
 #define TABLE(type, name, n)\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
-	assert(n > 0);\
+	assert(n > 0); assert(f);\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
 		f->d[i] = NULL;\
 }\

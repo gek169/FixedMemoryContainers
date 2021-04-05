@@ -16,7 +16,7 @@ Check the examples.
 
 ## What do you have?
 
-Fixed memory containers:
+Fixed memory containers, which are allocated globally and not typedef'd
 
 * A hashmap of restricted depth with the ability to use alternate columns 
 
@@ -24,17 +24,22 @@ Fixed memory containers:
 
 * A linked list
 
-Dynamic memory containers:
+Dynamic memory containers, which are typedef'd
 
 * An n-tree implementation with an arbitrary number of children decided at compiletime. Not declared as global, but rather typedef'd
 
-* table. a safely-indexed array of pointers with lazy allocation.
-
-
-
 has a naive (hacky) but non-recursive destructor.
 
+* table. a safely-indexed array of pointers with lazy allocation (Allocate-on-get) functionality.
+
+* Block. a safely indexed array.
+
+
+Dynamic memory containers which are not typedef'd but are declared globally:
+
 * the BIG STACK. allows you to push blocks of memory (of size BIGSTACK_ALIGNMENT) or pop them, with impunity.
+
+(A workaround for programs which want a really big stack)
 
 
 

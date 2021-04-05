@@ -48,4 +48,4 @@ static void* name##_push(BIGSTACK_SIZE_T s){\
 		return retval;\
 	}\
 }\
-static inline void name##_pop(BIGSTACK_SIZE_T s) {s *= BIGSTACK_ALIGNMENT; if(name##_sp >= s) name##_sp -= s; else name##_sp = 0;}
+static inline void name##_pop(BIGSTACK_SIZE_T s) {s *= BIGSTACK_ALIGNMENT; name##_sp -= s;}

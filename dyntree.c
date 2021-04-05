@@ -5,12 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+typedef unsigned int uint;
+void uint_cleanup_dummy(uint* a){(void)a;};
+void uint_constructor_dummy(uint* a){*a = 0;};
 //define types.
 DYNTREE(char*, mybin, 4);
 //Table type
-TABLE(unsigned int, mytable, 3);
+TABLE(uint, mytable, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //Block- array.
-BLOCK(unsigned int, myblock, 3);
+BLOCK(uint, myblock, 3);
 //Dynblock- a vector.
 DYNBLOCK(unsigned int, mydynblock);
 

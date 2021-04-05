@@ -32,11 +32,12 @@ has a naive (hacky) but non-recursive destructor.
 
 
 
-* table. a safely-indexed array of pointers with lazy allocation (Allocate-on-get) functionality. Size is specifies as a power of 2.
+* table. a safely-indexed array of pointers with lazy allocation (Allocate-on-get) functionality. 
+Size is specified as a power of 2.
 
 * Block. a safely indexed array. Size is specified as a power of two.
 
-* Dynblock. A dynamically sized, safely indexed array which uses realloc.
+* Dynblock. A dynamically sized, safely indexed array which uses realloc. Again, a power of two.
 
 Dynamic memory containers which are not typedef'd but are declared globally:
 

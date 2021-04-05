@@ -116,13 +116,11 @@ static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 }\
 static void name##_remove(name* f, DYNTREE_SIZE_T i){\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
-	if(f->d[i]) destructor(f->d[i]);\
+	if(f->d[i]) {destructor(f->d[i]); DYNTREE_FREE(f->d[i]); f->d[i] = NULL;}\
 }\
 static void name##_cleanup(name* f){\
-	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\
-		if(f->d[i]) destructor(f->d[i]);\
-		if(f->d[i]) DYNTREE_FREE(f->d[i]);\
-	}\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
+		name##_remove(f, i);\
 }
 
 

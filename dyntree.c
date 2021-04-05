@@ -6,16 +6,16 @@
 #include <stdlib.h>
 #include <string.h>
 typedef unsigned int uint;
-void uint_cleanup_dummy(uint* a){(void)a;};
-void uint_constructor_dummy(uint* a){*a = 0;};
+static inline void uint_cleanup_dummy(uint* a){(void)a;}
+static inline void uint_constructor_dummy(uint* a){*a = 0;}
 //define types.
 DYNTREE(char*, mybin, 4);
 //Table type
 TABLE(uint, mytable, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //Block- array.
-BLOCK(uint, myblock, 3);
+BLOCK(uint, myblock, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //Dynblock- a vector.
-DYNBLOCK(unsigned int, mydynblock);
+DYNBLOCK(uint, mydynblock, uint_constructor_dummy, uint_cleanup_dummy);
 
 
 mybin b = (mybin){0, {0}}; //When declared global, it is already in its initialized state.

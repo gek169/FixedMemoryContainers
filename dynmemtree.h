@@ -32,12 +32,13 @@
 #define DYNTREE_REALLOC realloc
 #endif
 
-#define BLOCK(type, name, n)\
+#define BLOCK(type, name, n, constructor, destructor)\
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
 static void name##_init(name* f){\
 	DYNTREE_ASSERT(n > 0);\
-	memset(f, 0, sizeof(name));\
+	for(DYNTREE_SIZE_T i = 0; i < name##_size; i++)\
+		constructor(f->d + i);\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
@@ -47,25 +48,28 @@ static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
 static void name##_cleanup(name* f){\
 	/*Nothing needs to be done. This type has no dynamic memory usage.*/\
 	DYNTREE_ASSERT(n > 0);\
+	for(DYNTREE_SIZE_T i = 0; i < name##_size; i++)\
+		destructor(f->d + i);\
 }
 
-#define DYNBLOCK(type, name)\
+#define DYNBLOCK(type, name, constructor, destructor)\
 typedef struct{type* d; DYNTREE_SIZE_T pow2size;} name;\
 static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
 	DYNTREE_ASSERT(initsize > 0);\
 	f->d = DYNTREE_REALLOC(NULL, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type));\
 	if(!f->d) abort();\
-	memset(f->d, 0, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type) );\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)); i++)\
+		constructor(f->d + i);\
 	f->pow2size = initsize;\
 }\
 static void name##_resize(name* f, DYNTREE_SIZE_T initsize){\
 	f->d = DYNTREE_REALLOC(f->d, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1))  * sizeof(type));\
 	if(!f->d) abort();\
 	{/*New size is larger than old size.*/\
-		for(size_t i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
+		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
 		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
 		i++)\
-			memset(f->d + i, 0, sizeof(type));\
+			constructor(f->d + i);\
 	}\
 	f->pow2size = initsize;\
 }\
@@ -77,6 +81,8 @@ static DYNTREE_SIZE_T name##_getsize(name *f){\
 	return ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
 }\
 static void name##_cleanup(name* f){\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1)); i++)\
+			destructor(f->d + i);\
 	DYNTREE_FREE(f->d);\
 }
 

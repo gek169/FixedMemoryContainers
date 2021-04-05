@@ -51,7 +51,7 @@ FIXEDMEM_ALIGN unsigned char name ## _mem [(((FIXEDMEM_SIZE_T)1)<<pow2)];
 FIXEDMEM_ALIGN extern unsigned char name ## _mem [(((FIXEDMEM_SIZE_T)1)<<pow2)];\
 static const FIXEDMEM_SIZE_T name ## _size = ((FIXEDMEM_SIZE_T)1)<<pow2;\
 static  void* name(void* p) {return (void*)((FIXEDMEM_PTR_UINT)( name ## _mem ) + (FIXEDMEM_PTR_UINT)p); }\
-static  void* name##_st(FIXEDMEM_SIZE_T p) {return (void*)(name ## _mem  + p); }
+static  void* name##_st(FIXEDMEM_SIZE_T p) {return (void*)(name ## _mem  + p); } /*We assume they want the fast access.*/
 
 
 //The hash map!

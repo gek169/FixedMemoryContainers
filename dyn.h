@@ -1,6 +1,10 @@
 //PROTOTYPE FOR THE COMMON CASE OF A TREE OR VECTOR OR LINKED LIST TO MANAGE MEMORY ALLOCATIONS.
 //For dynamic memory management.
 
+#ifndef DYN_H
+#define DYN_H
+
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -97,10 +101,59 @@ static void name##_cleanup(name* f){\
 }
 */
 
+/*Replacement for table if you've written code to use TABLE but want BLOCK behavior.*/
+#define TABLE_CONST(type, name, n, constructor, destructor, flood)\
+typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
+static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
+static void name##_init_flood(name* f){\
+	DYNTREE_ASSERT(n > 0);\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\
+		flood(f->d +i);\
+	}\
+}\
+static void name##_init(name* f){\
+	DYNTREE_ASSERT(n > 0);\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\
+		constructor(f->d +i);\
+		flood(f->d +i);\
+	}\
+}\
+static void name##_flood(name* f){\
+	DYNTREE_ASSERT(n > 0);\
+	/*Do nothing, already flooded*/\
+}\
+static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
+static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not available*/\
+	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	return f->d + i;\
+}\
+static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
+	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	return f->d + i;\
+}\
+static void name##_remove(name* f, DYNTREE_SIZE_T i){\
+	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	{destructor(f->d +i);}\
+}\
+static void name##_cleanup(name* f){\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
+		name##_remove(f, i);\
+}
 
-#define TABLE(type, name, n, constructor, destructor)\
+
+
+#define TABLE(type, name, n, constructor, destructor, flood)\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
+static void name##_init_flood(name* f){\
+	DYNTREE_ASSERT(n > 0);\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\
+		f->d[i] = (type*)DYNTREE_ALLOC(sizeof(type));\
+		if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failure.*/\
+		constructor(f->d[i]);\
+		flood(f->d[i]);\
+	}\
+}\
 static void name##_init(name* f){\
 	DYNTREE_ASSERT(n > 0);\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
@@ -114,6 +167,16 @@ static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not avail
 	if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failure.*/\
 	constructor(f->d[i]);\
 	return f->d[i];\
+}\
+static void name##_flood(name* f){\
+	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
+	{/*Perform a flood on the tree- allocate all memory, use the maximum possible amount.*/\
+			if(f->d[i]) {flood(f->d[i]);continue;}\
+			f->d[i] = (type*)DYNTREE_ALLOC(sizeof(type));\
+			if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failure.*/\
+			constructor(f->d[i]);\
+			flood(f->d[i]);\
+	}\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
 	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
@@ -160,3 +223,6 @@ static void name##_cleanup(name* f){						\
 															\
 }
 
+
+//dyn_h include guard.
+#endif

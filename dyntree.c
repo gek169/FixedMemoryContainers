@@ -23,7 +23,8 @@ TABLE(mytable, table2, 4, mytable_init, mytable_cleanup, mytable_flood);
 BLOCK(uint, myblock, 3, uint_constructor_dummy, uint_cleanup_dummy);
 
 
-//define uint_ptr, uint_borrow, uint_malloc, uint_calloc, and 
+//define types uint_ptr, uint_borrow, 
+//and functions uint_malloc, uint_calloc, and borrow_uint, which returns a uint_borrow.
 PTR(uint)
 //Dynblock- a vector.
 //Do not use it, the type system cannot guarantee its size at compile time.

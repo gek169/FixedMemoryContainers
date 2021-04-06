@@ -26,7 +26,7 @@ BLOCK(uint, myblock, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //DYNBLOCK(uint, mydynblock, uint_constructor_dummy, uint_cleanup_dummy);
 
 
-mybin b = (mybin){0, {0}}; //When declared global, it is already in its initialized state.
+mybin b = {0}; //When declared global, it is already in its initialized state.
 //Demonstrate ordinary dyntree
 void create_c(mybin* t, uint8_t iter){
 	mybin* d1 = calloc(1, sizeof(mybin));
@@ -53,7 +53,7 @@ int main(){
 	for(unsigned i = 0; i < mytable_size; i++)
 		if(mytable_get(&q, i))
 			printf("value at %u is is %u\n", i, *mytable_lazy_get(&q, i));
-	mytable_flood(&q); //flood the table.
+	mytable_flood(&q); //flood the table- which means "occupy all memory"
 	puts("\nFLOODING TABLE...\n");
 	for(unsigned i = 0; i < mytable_size; i++)
 			if(mytable_get(&q, i))

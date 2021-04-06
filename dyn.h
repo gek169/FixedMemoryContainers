@@ -46,10 +46,14 @@ typedef struct {
 } mystruct;
 and you have two destructors you've written for data 1 and data 2, then you can define a destructor for
 mystruct by doing the following
-CREATE_DESTRUCTOR(destroy_mystruct, mystruct, data1, destroy_something, data2, destroy_other)
+CREATE_DESTRUCTOR(destroy_mystruct, mystruct, 2, data1, destroy_something, data2, destroy_other)
 The destructor *will* be infinitely recursive if the struct includes itself as a member, so watch out!
 Don't implement a linked list or tree this way.
 */
+#define CREATE_DESTRUCTOR(name, type, num, ...)\
+void name(type* structure){multifree(num, __VA_ARGS__);}
+
+
 typedef void (*multifree_internal)(void*);
 static inline void multifree(unsigned long long npointers, ...){
 	va_list ptrs;

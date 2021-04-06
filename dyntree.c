@@ -50,11 +50,27 @@ void dummy(void* a){
 	printf("Asked to destroy a %zu!\n", (size_t)a);
 }
 
+typedef struct{
+	void* a;
+	void* b;
+	int x;
+	int y;
+} mycustomstruct;
+
+CREATE_DESTRUCTOR(destroy_mycustomstruct, mycustomstruct, 2, 
+structure->a, dummy, 
+structure->b, dummy);
+
 int main(){
 	b.d = calloc(1,6);
 	create_c(&b, 5);
 	mybin_cleanup(&b);
-	
+{
+	mycustomstruct bun = {0};
+	bun.a = malloc(10);
+	bun.b = malloc(20);
+	destroy_mycustomstruct(&bun);
+}	
 	mytable q = {0};
 	mytable_init(&q);
 	*mytable_lazy_get(&q, 3) = 5;

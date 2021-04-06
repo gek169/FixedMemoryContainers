@@ -45,9 +45,14 @@ void create_c(mybin* t, uint8_t iter){
 		create_c(d2, iter-1);
 	}
 }
+
+void dummy(void* a){
+	printf("Asked to destroy a %zu!\n", (size_t)a);
+}
+
 int main(){
 	b.d = calloc(1,6);
-	create_c(&b, 23);
+	create_c(&b, 5);
 	mybin_cleanup(&b);
 	
 	mytable q = {0};
@@ -127,4 +132,18 @@ int main(){
 			printf("value at %u is %u\n", (unsigned int)i, my_uint_array.p[i]);
 	}
 	uint_free(my_uint_array);
+	void* multi[10];
+	for(int i = 0; i < 10; i++)
+		multi[i] = malloc(100); //100 bytes
+	multifree(10, multi[0], dummy
+				, multi[1], dummy	
+				, multi[2], dummy
+				, multi[3], dummy
+				, multi[4], dummy
+				, multi[5], dummy
+				, multi[6], dummy
+				, multi[7], dummy
+				, multi[8], dummy
+				, multi[9], dummy
+				);
 }

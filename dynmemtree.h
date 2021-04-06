@@ -52,6 +52,9 @@ static void name##_cleanup(name* f){\
 		destructor(f->d + i);\
 }
 
+//Implementer's note:
+//Unsafe!
+/*
 #define DYNBLOCK(type, name, constructor, destructor)\
 typedef struct{type* d; DYNTREE_SIZE_T pow2size;} name;\
 static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
@@ -64,7 +67,7 @@ static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
 }\
 static void name##_resize(name* f, DYNTREE_SIZE_T initsize){\
 	if(initsize == f->pow2size) return;\
-	if(initsize < f->pow2size){/*New size is smaller than old size.*/\
+	if(initsize < f->pow2size){\
 		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
 		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
 		i++)\
@@ -72,7 +75,7 @@ static void name##_resize(name* f, DYNTREE_SIZE_T initsize){\
 	}\
 	f->d = DYNTREE_REALLOC(f->d, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1))  * sizeof(type));\
 	if(!f->d) abort();\
-	if(initsize > f->pow2size){/*New size is larger than old size.*/\
+	if(initsize > f->pow2size){\
 		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
 		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
 		i++)\
@@ -92,6 +95,8 @@ static void name##_cleanup(name* f){\
 		destructor(f->d + i);\
 	DYNTREE_FREE(f->d);\
 }
+*/
+
 
 #define TABLE(type, name, n, constructor, destructor)\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\

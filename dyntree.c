@@ -16,7 +16,7 @@ TABLE(uint, mytable, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //Block- array.
 BLOCK(uint, myblock, 3, uint_constructor_dummy, uint_cleanup_dummy);
 //Dynblock- a vector.
-DYNBLOCK(uint, mydynblock, uint_constructor_dummy, uint_cleanup_dummy);
+//DYNBLOCK(uint, mydynblock, uint_constructor_dummy, uint_cleanup_dummy);
 
 
 mybin b = (mybin){0, {0}}; //When declared global, it is already in its initialized state.
@@ -57,6 +57,7 @@ int main(){
 	myblock_cleanup(&bruh);
 	
 	puts("\n\n");
+	/*
 	mydynblock bruh2;
 	mydynblock_init(&bruh2, 3);
 	*mydynblock_get(&bruh2, 901237) = 5;
@@ -66,6 +67,7 @@ int main(){
 		for(unsigned i = 0; i < mydynblock_getsize(&bruh2); i++)
 		printf("value at %u is is %u\n", i, *mydynblock_get(&bruh2, i));
 	mydynblock_cleanup(&bruh2);
+	*/
 	#define LOOP(v, e)\
 	for(unsigned long long v = 0, __internal_##v = 0,__internal_test_##v[2*(e>0)-1]; __internal_##v < e; __internal_##v++, v = __internal_##v)
 	LOOP(i,1)

@@ -35,9 +35,9 @@ mybin b = {0}; //When declared global, it is already in its initialized state.
 //Demonstrate ordinary dyntree
 void create_c(mybin* t, uint8_t iter){
 	mybin* d1 = calloc(1, sizeof(mybin));
-	d1->d = calloc(1,10);
+	d1->d = calloc(1,100);
 	mybin* d2 = calloc(1, sizeof(mybin));
-	d2->d = calloc(1,10);
+	d2->d = calloc(1,100);
 	t->c[0] = d1;
 	t->c[1] = d2;
 	if(iter > 1){
@@ -46,8 +46,8 @@ void create_c(mybin* t, uint8_t iter){
 	}
 }
 int main(){
-	b.d = calloc(1,200);
-	create_c(&b, 20);
+	b.d = calloc(1,6);
+	create_c(&b, 23);
 	mybin_cleanup(&b);
 	
 	mytable q = {0};
@@ -82,6 +82,17 @@ int main(){
 					printf("value at %u,%u is is %u\n", i,j, *mytable_get(lq, j));
 		}
 	}
+	puts("\n~~~FLOODING THE MULTITABLE~~~\n");
+	table2_flood(&supertable);
+	for(unsigned i = 0; i < table2_size; i++){
+			mytable* lq = table2_get(&supertable, i);
+			if(lq){ /*Memory exists...*/
+				for(unsigned j = 0; j < mytable_size; j++)
+					if(mytable_get(lq, j))
+						printf("value at %u,%u is is %u\n", i,j, *mytable_get(lq, j));
+			}
+		}
+	
 	table2_cleanup(&supertable);
 	puts("\n\n");
 	myblock bruh = {0};

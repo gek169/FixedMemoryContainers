@@ -1,5 +1,4 @@
-//PROTOTYPE FOR THE COMMON CASE OF A TREE OR VECTOR OR LINKED LIST TO MANAGE MEMORY ALLOCATIONS.
-//For dynamic memory management.
+//Dynamic Memory management prototypes for C.
 
 #ifndef DYN_H
 #define DYN_H
@@ -206,8 +205,8 @@ static void name##_cleanup(name* f){						\
 		if(hadc)continue;									\
 		/*Bottom of the tree. no c.*/						\
 		if(cpr)cpr->c[cpi]	= NULL;							\
-		if(c->d){destructor(c->d); DYNTREE_FREE(c->d);}		\
-		if(c != f) DYNTREE_FREE(c); else break;				\
+		if(c->d){destructor(c->d); DYNTREE_FREE(c->d);c->d = NULL;}\
+		if(c != f) DYNTREE_FREE(c); else return;			\
 		c = f; cpr = NULL; cpi = 0;							\
 	}														\
 															\

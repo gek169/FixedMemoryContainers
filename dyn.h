@@ -51,17 +51,17 @@ The destructor *will* be infinitely recursive if the struct includes itself as a
 Don't implement a linked list or tree this way.
 */
 #define CREATE_DESTRUCTOR(name, type, num, ...)\
-void name(type* structure){multifree(num, __VA_ARGS__);}
+void name(type* structure){dyn_multidestroy(num, __VA_ARGS__);}
 
 
-typedef void (*multifree_internal)(void*);
-static inline void multifree(unsigned long long npointers, ...){
+typedef void (*dyn_multidestroy_internal)(void*);
+static inline void dyn_multidestroy(unsigned long long npointers, ...){
 	va_list ptrs;
 	va_start(ptrs, npointers);
 	npointers *= 2;
 	for(unsigned long long i = 0; i < npointers; i+=2){
 		void* p = va_arg(ptrs, void*);
-		multifree_internal dstr  = va_arg(ptrs, multifree_internal  );
+		dyn_multidestroy_internal dstr  = va_arg(ptrs, dyn_multidestroy_internal );
 		dstr(p);
 		DYNTREE_FREE(p);
 	}

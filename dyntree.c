@@ -151,7 +151,7 @@ int main(){
 	void* multi[10];
 	for(int i = 0; i < 10; i++)
 		multi[i] = malloc(100); //100 bytes
-	multifree(10, multi[0], dummy
+	dyn_multidestroy(10, multi[0], dummy
 				, multi[1], dummy	
 				, multi[2], dummy
 				, multi[3], dummy

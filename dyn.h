@@ -31,6 +31,36 @@
 #define DYNTREE_ALLOC malloc
 #endif
 
+#ifndef DYNTREE_CALLOC
+#define DYNTREE_CALLOC calloc
+#endif
+
+/*
+Wrapper around pointers which implicitly requires you to keep a size,
+and a "borrowed" type which allows you to keep track of, in the type system,
+whether a pointer is "owning" or not.
+*/
+
+#define PTR(type)\
+typedef struct {type* p; unsigned long long size;} type##_ptr;\
+typedef struct {type* p; unsigned long long size;} type##_borrow;/*A borrow.*/\
+static inline type##_ptr type##_malloc(unsigned long long size){\
+	type##_ptr ret = {0};\
+	ret.p = DYNTREE_ALLOC(sizeof(type) * size);\
+	ret.size = (ret.p)?size:0;\
+	return ret;\
+}\
+static inline type##_ptr type##_calloc(unsigned long long size){\
+	type##_ptr ret = {0};\
+	ret.p = DYNTREE_CALLOC(1,sizeof(type)*size);\
+	ret.size = (ret.p)?size:0;\
+	return ret;\
+}\
+static inline void type##_free(type##_ptr a){if(a.p)DYNTREE_FREE(a.p);}\
+static inline type##_borrow borrow_##type(type##_ptr a){\
+	type##_borrow q; q.p = a.p; q.size = a.size; return q;\
+}
+
 
 #define BLOCK(type, name, n, constructor, destructor)\
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\

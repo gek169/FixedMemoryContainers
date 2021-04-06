@@ -21,6 +21,10 @@ TABLE(uint, mytable, 3, uint_constructor_dummy, uint_cleanup_dummy, uint_flood_d
 TABLE(mytable, table2, 4, mytable_init, mytable_cleanup, mytable_flood);
 //Block- array.
 BLOCK(uint, myblock, 3, uint_constructor_dummy, uint_cleanup_dummy);
+
+
+//define uint_ptr, uint_borrow, uint_malloc, uint_calloc, and 
+PTR(uint)
 //Dynblock- a vector.
 //Do not use it, the type system cannot guarantee its size at compile time.
 //DYNBLOCK(uint, mydynblock, uint_constructor_dummy, uint_cleanup_dummy);
@@ -100,10 +104,15 @@ int main(){
 	mydynblock_cleanup(&bruh2);
 	*/
 	//Proof of concept- safe loops
+	//Also, safe pointer demonstration. Forces you to track size.
+	uint_ptr my_uint_array = {0};
+	my_uint_array = uint_calloc(27);
 	#define LOOP(v, e)\
 	for(unsigned long long v = 0, __internal_##v = 0,__internal_test_##v[2*(e>0)-1]; __internal_##v < e; __internal_##v++, v = __internal_##v)
-	LOOP(i,10)
+	LOOP(i,29)
 	{
-		printf("value is %lld\n", i++);
+		if(my_uint_array.p && my_uint_array.size > i)
+			printf("value at %u is %u\n", (unsigned int)i, my_uint_array.p[i]);
 	}
+	uint_free(my_uint_array);
 }

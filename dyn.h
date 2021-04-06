@@ -39,6 +39,8 @@
 Wrapper around pointers which implicitly requires you to keep a size,
 and a "borrowed" type which allows you to keep track of, in the type system,
 whether a pointer is "owning" or not.
+
+This could be especially useful in situations where you have pointers which you pass around in your program and are used 
 */
 
 #define PTR(type)\

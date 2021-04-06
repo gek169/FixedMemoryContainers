@@ -79,7 +79,7 @@ int main(){
 	}
 	table2_cleanup(&supertable);
 	puts("\n\n");
-	myblock bruh;
+	myblock bruh = {0};
 	myblock_init(&bruh);
 	*myblock_get(&bruh, 901237) = 5;
 	*myblock_get(&bruh, 375) = 9;

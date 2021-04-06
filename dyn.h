@@ -39,13 +39,14 @@
 #define BLOCK(type, name, n, constructor, destructor)\
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
+static const DYNTREE_SIZE_T name##_mask = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1))-1;\
 static void name##_init(name* f){\
 	DYNTREE_ASSERT(n > 0);\
 	for(DYNTREE_SIZE_T i = 0; i < name##_size; i++)\
 		constructor(f->d + i);\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	i &= name##_mask;\
 	return f->d + i;\
 }\
 static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
@@ -56,58 +57,17 @@ static void name##_cleanup(name* f){\
 		destructor(f->d + i);\
 }
 
-//Implementer's note:
-//Unsafe!
-/*
-#define DYNBLOCK(type, name, constructor, destructor)\
-typedef struct{type* d; DYNTREE_SIZE_T pow2size;} name;\
-static void name##_init(name* f, DYNTREE_SIZE_T initsize){\
-	DYNTREE_ASSERT(initsize > 0);\
-	f->d = DYNTREE_REALLOC(NULL, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)) * sizeof(type));\
-	if(!f->d) abort();\
-	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1)); i++)\
-		constructor(f->d + i);\
-	f->pow2size = initsize;\
-}\
-static void name##_resize(name* f, DYNTREE_SIZE_T initsize){\
-	if(initsize == f->pow2size) return;\
-	if(initsize < f->pow2size){\
-		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
-		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
-		i++)\
-			destructor(f->d + i);\
-	}\
-	f->d = DYNTREE_REALLOC(f->d, ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1))  * sizeof(type));\
-	if(!f->d) abort();\
-	if(initsize > f->pow2size){\
-		for(DYNTREE_SIZE_T i = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
-		i<((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(initsize-1));\
-		i++)\
-			constructor(f->d + i);\
-	}\
-	f->pow2size = initsize;\
-}\
-static type* name##_get(name* f, DYNTREE_SIZE_T i){\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1)) - 1;\
-	return f->d + i;\
-}\
-static DYNTREE_SIZE_T name##_getsize(name *f){\
-	return ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1));\
-}\
-static void name##_cleanup(name* f){\
-	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(f->pow2size-1)); i++)\
-		destructor(f->d + i);\
-	DYNTREE_FREE(f->d);\
-}
-*/
+
 
 /*Replacement for table if you've written code to use TABLE but want BLOCK behavior.*/
 #define TABLE_CONST(type, name, n, constructor, destructor, flood)\
 typedef struct{type d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
+static const DYNTREE_SIZE_T name##_mask = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 static void name##_init_flood(name* f){\
 	DYNTREE_ASSERT(n > 0);\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\
+		constructor(f->d +i);\
 		flood(f->d +i);\
 	}\
 }\
@@ -124,20 +84,21 @@ static void name##_flood(name* f){\
 }\
 static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
 static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not available*/\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	i &= name##_mask;\
 	return f->d + i;\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	i &= name##_mask;\
 	return f->d + i;\
 }\
 static void name##_remove(name* f, DYNTREE_SIZE_T i){\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
-	{destructor(f->d +i);}\
+	i &= name##_mask;\
+		{destructor(f->d +i);}\
 }\
 static void name##_cleanup(name* f){\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++)\
 		name##_remove(f, i);\
+	*f = {0};\
 }
 
 
@@ -145,6 +106,7 @@ static void name##_cleanup(name* f){\
 #define TABLE(type, name, n, constructor, destructor, flood)\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\
+static const DYNTREE_SIZE_T name##_mask = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
 static void name##_init_flood(name* f){\
 	DYNTREE_ASSERT(n > 0);\
 	for(DYNTREE_SIZE_T i = 0; i < ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)); i++){\
@@ -161,7 +123,7 @@ static void name##_init(name* f){\
 }\
 static DYNTREE_SIZE_T name##_getsize(name *f){return name##_size;}\
 static type* name##_lazy_get(name* f, DYNTREE_SIZE_T i){/*Allocates if not available*/\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	i &= name##_mask;\
 	if(f->d[i]) return f->d[i];\
 	f->d[i] = (type*)DYNTREE_ALLOC(sizeof(type));\
 	if(!f->d[i]) abort();/*Check that memory allocation succeeded- abort on failure.*/\
@@ -179,11 +141,11 @@ static void name##_flood(name* f){\
 	}\
 }\
 static type* name##_get(name* f, DYNTREE_SIZE_T i){/*Safe indexing only.*/\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	i &= name##_mask;\
 	return f->d[i];\
 }\
 static void name##_remove(name* f, DYNTREE_SIZE_T i){\
-	i &= ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) - 1;\
+	i &= name##_mask;\
 	if(f->d[i]) {destructor(f->d[i]); DYNTREE_FREE(f->d[i]); f->d[i] = NULL;}\
 }\
 static void name##_cleanup(name* f){\

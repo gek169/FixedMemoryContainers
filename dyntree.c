@@ -45,7 +45,7 @@ int main(){
 	create_c(&b, 20);
 	mybin_cleanup(&b);
 	
-	mytable q;
+	mytable q = {0};
 	mytable_init(&q);
 	*mytable_lazy_get(&q, 3) = 5;
 	*mytable_lazy_get(&q, 1) = 7;
@@ -60,7 +60,7 @@ int main(){
 				printf("value at %u is is %u\n", i, *mytable_lazy_get(&q, i));
 	mytable_cleanup(&q);
 	puts("\n~~TESTING MULTI-LEVEL TABLE~~\n");
-	table2 supertable;
+	table2 supertable = {0};
 	table2_init(&supertable);
 	*mytable_lazy_get(
 	table2_lazy_get(&supertable, 3),0) = 5;

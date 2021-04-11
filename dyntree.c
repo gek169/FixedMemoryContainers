@@ -58,8 +58,8 @@ typedef struct{
 } mycustomstruct;
 
 CREATE_DESTRUCTOR(destroy_mycustomstruct, mycustomstruct, 2, 
-structure->a, dummy, 
-structure->b, dummy);
+structure->a, free, 
+structure->b, free);
 
 int main(){
 	b.d = calloc(1,6);
@@ -151,15 +151,15 @@ int main(){
 	void* multi[10];
 	for(int i = 0; i < 10; i++)
 		multi[i] = malloc(100); //100 bytes
-	dyn_multidestroy(10, multi[0], dummy
-				, multi[1], dummy	
-				, multi[2], dummy
-				, multi[3], dummy
-				, multi[4], dummy
-				, multi[5], dummy
-				, multi[6], dummy
-				, multi[7], dummy
-				, multi[8], dummy
-				, multi[9], dummy
+	dyn_multidestroy(10, multi[0], free
+				, multi[1], free	
+				, multi[2], free
+				, multi[3], free
+				, multi[4], free
+				, multi[5], free
+				, multi[6], free
+				, multi[7], free
+				, multi[8], free
+				, multi[9], free
 				);
 }

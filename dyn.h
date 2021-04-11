@@ -53,7 +53,6 @@ Don't implement a linked list or tree this way.
 #define CREATE_DESTRUCTOR(name, type, num, ...)\
 void name(type* structure){dyn_multidestroy(num, __VA_ARGS__);}
 
-
 typedef void (*dyn_multidestroy_internal)(void*);
 static inline void dyn_multidestroy(unsigned long long npointers, ...){
 	va_list ptrs;
@@ -63,7 +62,6 @@ static inline void dyn_multidestroy(unsigned long long npointers, ...){
 		void* p = va_arg(ptrs, void*);
 		dyn_multidestroy_internal dstr  = va_arg(ptrs, dyn_multidestroy_internal );
 		dstr(p);
-		DYNTREE_FREE(p);
 	}
 	va_end(ptrs);
 	return;

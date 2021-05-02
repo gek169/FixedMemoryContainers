@@ -166,7 +166,6 @@ static void name##_cleanup(name* f){\
 }
 
 
-
 #define TABLE(type, name, n, constructor, destructor, flood)\
 typedef struct{type* d[ ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1)) ];} name;\
 static const DYNTREE_SIZE_T name##_size = ((DYNTREE_SIZE_T)1<<(DYNTREE_SIZE_T)(n-1));\

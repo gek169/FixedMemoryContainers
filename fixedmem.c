@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 //name, power of 2. MUST be large enough to hold at least one size_t.
-FIXEDMEM_BLOCK_EXTERN(myblock, 32);
-FIXEDMEM_BLOCK(myblock, 32);
+FIXEDMEM_BLOCK_EXTERN(myblock, 31);
+FIXEDMEM_BLOCK(myblock, 31);
 
 
 int main(){
